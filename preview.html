@@ -1,0 +1,786 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANH ❤️ EM</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background: #050008;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+button, input {
+    font-family: inherit;
+}
+
+/* MÀN HÌNH NHẬP MẬT KHẨU */
+#password-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: radial-gradient(circle, #35102c, #08000c 70%);
+}
+
+.password-box {
+    width: 100%;
+    max-width: 360px;
+    padding: 30px 24px;
+    border: 1px solid #ff70b8;
+    border-radius: 22px;
+    background: rgba(35, 0, 25, 0.88);
+    box-shadow: 0 0 35px #ff168755;
+}
+
+.password-box h1 {
+    color: #ff91c8;
+    font-size: 25px;
+}
+
+.password-box p {
+    color: #ffd5e9;
+    line-height: 1.6;
+}
+
+.password-box input {
+    width: 100%;
+    margin: 8px 0;
+    padding: 13px;
+    border: 1px solid #ff78bb;
+    border-radius: 10px;
+    outline: none;
+    background: #170815;
+    color: white;
+    text-align: center;
+    font-size: 16px;
+}
+
+.main-button {
+    border: none;
+    border-radius: 30px;
+    padding: 12px 22px;
+    margin-top: 12px;
+    background: linear-gradient(45deg, #ff268a, #ff80bd);
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 18px #ff268a66;
+    transition: transform 0.2s;
+}
+
+.main-button:hover {
+    transform: scale(1.06);
+}
+
+#error-message {
+    min-height: 20px;
+    color: #ffb2d0;
+    font-size: 14px;
+}
+
+/* NỘI DUNG CHÍNH */
+#main-content {
+    display: none;
+    position: relative;
+    min-height: 100vh;
+    padding: 25px 12px 70px;
+}
+
+.heading {
+    position: relative;
+    z-index: 2;
+    margin-top: 15px;
+    color: #ff9acb;
+    text-shadow: 0 0 12px #ff168b, 0 0 28px #ff168b;
+    animation: titleGlow 2s infinite alternate;
+}
+
+.heading h1 {
+    margin-bottom: 8px;
+    font-size: clamp(28px, 6vw, 44px);
+}
+
+.heading p {
+    margin-top: 0;
+    color: #ffd3e8;
+    font-size: 18px;
+}
+
+@keyframes titleGlow {
+    from { opacity: 0.8; }
+    to { opacity: 1; }
+}
+
+/* TRÁI TIM CANVAS */
+#heart-canvas {
+    display: block;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 560px;
+    height: 420px;
+    margin: 0 auto;
+}
+
+/* CHỮ BAY LÊN */
+.flying-word {
+    position: fixed;
+    z-index: 20;
+    bottom: -60px;
+    pointer-events: none;
+    white-space: nowrap;
+    font-weight: bold;
+    color: #ff80c0;
+    text-shadow: 0 0 10px #ff168b, 0 0 20px #ff168b;
+    will-change: transform, opacity;
+    animation: wordsUp linear forwards;
+}
+
+@keyframes wordsUp {
+    0% {
+        transform: translateY(0) rotate(-8deg) scale(0.8);
+        opacity: 0;
+    }
+    12% {
+        opacity: 1;
+    }
+    85% {
+        opacity: 0.9;
+    }
+    100% {
+        transform: translateY(-120vh) rotate(12deg) scale(1.15);
+        opacity: 0;
+    }
+}
+
+/* EMOJI BAY LÊN */
+.flying-picture {
+    position: fixed;
+    z-index: 19;
+    bottom: -60px;
+    pointer-events: none;
+    filter: drop-shadow(0 0 8px #ff3f9c);
+    will-change: transform, opacity;
+    animation: pictureUp linear forwards;
+}
+
+@keyframes pictureUp {
+    0% {
+        transform: translateY(0) rotate(0deg) scale(0.7);
+        opacity: 0;
+    }
+    15% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-120vh) rotate(35deg) scale(1.3);
+        opacity: 0;
+    }
+}
+
+/* NÚT MỞ TÂM THƯ */
+.letter-section {
+    position: relative;
+    z-index: 5;
+    margin: 0 auto;
+    padding: 15px 10px 30px;
+}
+
+.letter-button {
+    padding: 14px 25px;
+    border: 1px solid #ff9ccc;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #b60055, #ff4d9d);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 22px #ff258b88;
+    animation: buttonPulse 1.8s infinite;
+}
+
+@keyframes buttonPulse {
+    0%, 100% { box-shadow: 0 0 12px #ff258b77; }
+    50% { box-shadow: 0 0 30px #ff258bcc; }
+}
+
+/* PHONG BÌ */
+#envelope-area {
+    display: none;
+    position: relative;
+    z-index: 10;
+    padding: 25px 10px 45px;
+    animation: appear 0.7s ease;
+}
+
+#envelope-area.show {
+    display: block;
+}
+
+@keyframes appear {
+    from { opacity: 0; transform: translateY(20px) scale(0.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.envelope {
+    position: relative;
+    width: 220px;
+    height: 145px;
+    margin: 18px auto 10px;
+    cursor: pointer;
+    filter: drop-shadow(0 0 18px #ff2d93aa);
+    transition: transform 0.3s;
+}
+
+.envelope:hover {
+    transform: scale(1.06);
+}
+
+.envelope-body {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    background: linear-gradient(145deg, #ffb6d7, #ff5caa);
+    border: 2px solid #ffe0ef;
+}
+
+.envelope-body::before {
+    content: "";
+    position: absolute;
+    left: -5%;
+    bottom: -45%;
+    width: 75%;
+    height: 100%;
+    background: #e83d8d;
+    transform: rotate(35deg);
+    border: 1px solid #ffd4e7;
+}
+
+.envelope-body::after {
+    content: "";
+    position: absolute;
+    right: -5%;
+    bottom: -45%;
+    width: 75%;
+    height: 100%;
+    background: #f34a98;
+    transform: rotate(-35deg);
+    border: 1px solid #ffd4e7;
+}
+
+.envelope-flap {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 110px solid transparent;
+    border-right: 110px solid transparent;
+    border-top: 82px solid #ffdaeb;
+    filter: drop-shadow(0 3px 2px #d72b7a66);
+}
+
+.read-button {
+    position: absolute;
+    z-index: 5;
+    top: 51%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 8px 19px;
+    border: 2px solid white;
+    border-radius: 20px;
+    background: #c4005c;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    cursor: pointer;
+    box-shadow: 0 0 15px #ff167b;
+}
+
+.envelope-hint {
+    color: #ffc5e0;
+    font-size: 15px;
+}
+
+/* LÁ THƯ */
+#letter-modal {
+    display: none;
+    position: fixed;
+    z-index: 200;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    background: rgba(8, 0, 10, 0.88);
+    backdrop-filter: blur(7px);
+}
+
+#letter-modal.show {
+    display: flex;
+    animation: appear 0.4s ease;
+}
+
+.letter-paper {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 30px 24px;
+    border: 2px solid #ffb8d9;
+    border-radius: 12px;
+    background: linear-gradient(150deg, #fff6fa, #ffe0ed);
+    color: #7c1749;
+    box-shadow: 0 0 35px #ff278b88;
+    text-align: left;
+}
+
+.letter-paper::before {
+    content: "❤️";
+    display: block;
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 30px;
+}
+
+.letter-paper h2 {
+    margin-top: 0;
+    color: #d00064;
+    text-align: center;
+}
+
+.letter-content {
+    font-size: 16px;
+    line-height: 1.9;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+.close-letter {
+    display: block;
+    margin: 24px auto 0;
+    padding: 11px 22px;
+    border: none;
+    border-radius: 25px;
+    background: #d00064;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.back-envelope {
+    display: block;
+    margin: 12px auto 0;
+    padding: 8px 15px;
+    border: 1px solid #d00064;
+    border-radius: 20px;
+    background: transparent;
+    color: #a00050;
+    cursor: pointer;
+}
+
+/* ĐIỆN THOẠI */
+@media (max-width: 500px) {
+    #heart-canvas {
+        height: 340px;
+    }
+
+    .heading h1 {
+        font-size: 30px;
+    }
+
+    .letter-paper {
+        padding: 24px 18px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .heading,
+    .letter-button {
+        animation: none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- MÀN HÌNH MẬT KHẨU -->
+<div id="password-screen">
+    <div class="password-box">
+        <h1>💗 DÀNH RIÊNG CHO EM 💗</h1>
+        <p>Muốn nhìn thấy trái tim này,<br>
+        em hãy nhập đúng bí mật của chúng ta nhé!</p>
+
+        <input
+            id="password-input"
+            type="password"
+            placeholder="Nhập mật khẩu..."
+            autocomplete="off"
+        >
+
+        <input
+            id="answer-input"
+            type="text"
+            placeholder="Nhập ngày sinh nhật của em (DD/MM/YYYY)"
+            autocomplete="off"
+        >
+
+        <button class="main-button" onclick="checkPassword()">
+            MỞ TRÁI TIM ❤️
+        </button>
+
+        <p id="error-message"></p>
+    </div>
+</div>
+
+<!-- TRANG CHÍNH -->
+<main id="main-content">
+
+    <header class="heading">
+        <h1>BÍCH HỒNG❤️</h1>
+        <p>CHÚC EM 20/10 VUI VẺ</p>
+        <p>Gửi đến người anh thương nhất 💖</p>
+    </header>
+
+    <canvas id="heart-canvas"></canvas>
+
+    <div class="letter-section">
+        <button class="letter-button" onclick="showEnvelope()">
+            💌 MỞ TÂM THƯ 💌
+        </button>
+    </div>
+
+    <section id="envelope-area">
+        <h2 style="color:#ff9ccc;">💗 Một lá thư dành cho em 💗</h2>
+
+        <div class="envelope" onclick="openLetter()">
+            <div class="envelope-body"></div>
+            <div class="envelope-flap"></div>
+
+            <button
+                class="read-button"
+                onclick="event.stopPropagation(); openLetter();"
+                aria-label="Đọc tâm thư"
+            >ĐỌC</button>
+        </div>
+
+        <p class="envelope-hint">
+            Chạm vào chữ “ĐỌC” để mở lá thư nhé ❤️
+        </p>
+    </section>
+</main>
+
+<!-- LÁ THƯ -->
+<div id="letter-modal" role="dialog" aria-modal="true" aria-labelledby="letter-title">
+    <article class="letter-paper">
+        <h2 id="letter-title">Gửi tới ebe của anh ❤️</h2>
+
+        <div class="letter-content" id="letter-content">Ebe trước màn hình ! 💗
+
+Anh không biết sau này chúng ta sẽ đi cùng nhau được bao xa, nhưng ở thời điểm hiện tại, anh thật sự muốn nghiêm túc tìm hiểu em. Anh không muốn đến bên em chỉ vì những cảm xúc nhất thời, cũng không muốn nói những lời hứa hẹn thật đẹp rồi để em phải thất vọng. Anh muốn chúng ta có thời gian để hiểu nhau hơn, biết những điều em thích, những điều khiến em buồn, những nỗi lo em chẳng dễ dàng kể với ai và cả những ước mơ em đang cố gắng thực hiện.
+
+Anh biết rằng giữa hai người đang tìm hiểu nhau, có lẽ chưa thể gọi là yêu, cũng chưa đủ thân thuộc để hứa hẹn về một tương lai quá xa. Nhưng anh tin rằng nếu cả hai đều thật lòng, biết quan tâm, lắng nghe và dành cho nhau sự chân thành thì tình cảm sẽ dần lớn lên theo cách tự nhiên nhất.
+
+Anh không dám nhận mình là người hoàn hảo, cũng chẳng chắc mình lúc nào cũng biết cách khiến em vui. Nhưng nếu có cơ hội, anh muốn học cách yêu thương em đúng cách, muốn trở thành người mà em có thể thoải mái chia sẻ mọi chuyện, từ những niềm vui nhỏ nhặt đến những ngày em cảm thấy mệt mỏi nhất.
+
+Anh mong chúng ta không cần phải vội vàng, cũng không cần phải cố gắng trở thành một người khác để làm hài lòng đối phương. Cứ là chính mình, cứ từ từ tìm hiểu, từ từ mở lòng và cùng nhau xem liệu hai trái tim có thực sự thuộc về nhau hay không.
+
+Nếu một ngày nào đó em cũng có tình cảm với anh, anh hy vọng đó không chỉ là vì những lời anh nói hôm nay, mà còn vì những điều anh đã làm trong suốt quãng thời gian chúng ta bên nhau. Anh muốn em cảm nhận được sự chân thành của anh qua từng hành động nhỏ, qua cách anh quan tâm, tôn trọng và trân trọng cảm xúc của em.
+
+Anh không mong mình sẽ là người xuất hiện rực rỡ nhất trong cuộc đời em, anh chỉ mong nếu có thể, anh sẽ là người khiến em cảm thấy bình yên khi ở cạnh. Và nếu sau tất cả, chúng ta thật sự có thể bước vào cuộc đời nhau với tư cách là người yêu, anh sẽ rất vui vì người anh lựa chọn nghiêm túc ngay từ đầu chính là em.
+
+Cảm ơn em vì đã xuất hiện và cho anh cơ hội được tìm hiểu em. Còn chuyện sau này thế nào, anh không muốn chỉ nói bằng lời. Anh muốn chúng ta cùng nhau viết tiếp câu chuyện ấy, bằng sự chân thành của cả hai. ❤️
+
+Nếu có một điều anh muốn nói với em ngay lúc này, thì đó là:
+
+ANH THƯƠNG EM RẤT NHIỀU! ❤️
+
+Mong rằng khi đọc lá thư này, em sẽ mỉm cười một chút nhé. 🌹
+
+Mãi thương em! 💌</div>
+
+        <button class="close-letter" onclick="closeLetter()">
+            ĐÓNG TÂM THƯ ❤️
+        </button>
+
+        <button class="back-envelope" onclick="closeLetter()">
+            Quay lại trái tim
+        </button>
+    </article>
+</div>
+
+<script>
+/* =========================
+   MẬT KHẨU
+========================= */
+const SECRET_PASSWORD = "EMYEUANH";
+const SECRET_ANSWER = "14/09/2009";
+
+let effectsEnabled = false;
+
+function checkPassword() {
+    const password = document.getElementById("password-input").value.trim();
+    const answer = document.getElementById("answer-input").value.trim();
+    const error = document.getElementById("error-message");
+
+    if (password === SECRET_PASSWORD && answer === SECRET_ANSWER) {
+        document.getElementById("password-screen").style.display = "none";
+        document.getElementById("main-content").style.display = "block";
+
+        effectsEnabled = true;
+        startHeartAnimation();
+    } else {
+        error.textContent =
+            "Mật khẩu hoặc ngày đặc biệt chưa đúng, em thử lại nhé 💗";
+    }
+}
+
+document.getElementById("password-input").addEventListener("keydown", function(event) {
+    if (event.key === "Enter") checkPassword();
+});
+
+document.getElementById("answer-input").addEventListener("keydown", function(event) {
+    if (event.key === "Enter") checkPassword();
+});
+
+/* MỞ PHONG BÌ */
+function showEnvelope() {
+    const envelope = document.getElementById("envelope-area");
+    envelope.classList.add("show");
+
+    envelope.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+}
+
+/* MỞ / ĐÓNG LÁ THƯ */
+function openLetter() {
+    document.getElementById("letter-modal").classList.add("show");
+}
+
+function closeLetter() {
+    document.getElementById("letter-modal").classList.remove("show");
+}
+
+document.getElementById("letter-modal").addEventListener("click", function(event) {
+    if (event.target === this) closeLetter();
+});
+
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") closeLetter();
+});
+
+/* =========================
+   HIỆU ỨNG TRÁI TIM
+========================= */
+let heartAnimationStarted = false;
+let heartCanvas;
+let ctx;
+let heartWidth = 0;
+let heartHeight = 0;
+let heartParticles = [];
+
+function heartPoint(t) {
+    const x = 16 * Math.pow(Math.sin(t), 3);
+    const y = -(13 * Math.cos(t)
+        - 5 * Math.cos(2 * t)
+        - 2 * Math.cos(3 * t)
+        - Math.cos(4 * t));
+
+    return { x, y };
+}
+
+function resizeHeartCanvas() {
+    if (!heartCanvas || !ctx) return;
+
+    const rect = heartCanvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    heartWidth = rect.width;
+    heartHeight = rect.height;
+
+    heartCanvas.width = Math.round(heartWidth * dpr);
+    heartCanvas.height = Math.round(heartHeight * dpr);
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function createHeartParticles() {
+    heartParticles = [];
+
+    const count = window.innerWidth < 500 ? 700 : 1200;
+
+    for (let i = 0; i < count; i++) {
+        const t = Math.random() * Math.PI * 2;
+        const point = heartPoint(t);
+        const scale = 8 + Math.random() * 1.5;
+
+        heartParticles.push({
+            x: point.x * scale,
+            y: point.y * scale,
+            size: Math.random() * 1.8 + 0.5,
+            alpha: Math.random() * 0.65 + 0.3,
+            phase: Math.random() * Math.PI * 2
+        });
+    }
+}
+
+function drawHeart(time) {
+    if (!ctx || !heartWidth || !heartHeight) return;
+
+    ctx.clearRect(0, 0, heartWidth, heartHeight);
+
+    const pulse = 1 + Math.sin(time * 0.0025) * 0.055;
+    const scale = Math.min(heartWidth, heartHeight) / 39 * pulse;
+    const centerX = heartWidth / 2;
+    const centerY = heartHeight / 2 + 5;
+
+    ctx.save();
+    ctx.translate(centerX, centerY);
+    ctx.scale(scale, scale);
+
+    const glow = ctx.createRadialGradient(0, 0, 1, 0, 0, 20);
+    glow.addColorStop(0, "rgba(255, 35, 130, 0.22)");
+    glow.addColorStop(1, "rgba(255, 0, 100, 0)");
+
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+
+    for (let t = 0; t <= Math.PI * 2 + 0.02; t += 0.02) {
+        const p = heartPoint(t);
+
+        if (t === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+    }
+
+    ctx.closePath();
+    ctx.fill();
+
+    for (const particle of heartParticles) {
+        const shimmer = 0.55 + Math.sin(time * 0.003 + particle.phase) * 0.4;
+
+        ctx.globalAlpha = particle.alpha * shimmer;
+        ctx.fillStyle = Math.random() > 0.12 ? "#ff5aa8" : "#ffffff";
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    ctx.globalAlpha = 1;
+    ctx.restore();
+
+    requestAnimationFrame(drawHeart);
+}
+
+function startHeartAnimation() {
+    if (heartAnimationStarted) return;
+
+    heartAnimationStarted = true;
+    heartCanvas = document.getElementById("heart-canvas");
+    ctx = heartCanvas.getContext("2d");
+
+    resizeHeartCanvas();
+    createHeartParticles();
+    requestAnimationFrame(drawHeart);
+}
+
+window.addEventListener("resize", function() {
+    if (heartAnimationStarted) {
+        resizeHeartCanvas();
+        createHeartParticles();
+    }
+});
+
+/* =========================
+   CHỮ YÊU EM BAY LÊN
+========================= */
+const loveWords = [
+    "Yêu em ❤️",
+    "Thương em 💗",
+    "Em là điều đặc biệt 🌹",
+    "Mãi bên nhau nhé 💕",
+    "Nhớ em nhiều 💖",
+    "Anh thương em 😘",
+    "BÍCH HỒNG ❤️"
+];
+
+function createFlyingWord() {
+    if (!effectsEnabled) return;
+
+    const word = document.createElement("span");
+    word.className = "flying-word";
+    word.textContent = loveWords[
+        Math.floor(Math.random() * loveWords.length)
+    ];
+
+    word.style.left = (Math.random() * 80 + 5) + "vw";
+    word.style.fontSize = (15 + Math.random() * 10) + "px";
+
+    const duration = 6 + Math.random() * 4;
+    word.style.animationDuration = duration + "s";
+
+    document.body.appendChild(word);
+
+    setTimeout(function() {
+        word.remove();
+    }, duration * 1000 + 300);
+}
+
+/* =========================
+   EMOJI BAY LÊN
+========================= */
+const flyingPictures = [
+    "❤️", "💖", "💗", "💘", "💝",
+    "🌹", "💐", "💌", "🧸", "💕", "😘", "🦋"
+];
+
+function createFlyingPicture() {
+    if (!effectsEnabled) return;
+
+    const picture = document.createElement("div");
+    picture.className = "flying-picture";
+    picture.textContent = flyingPictures[
+        Math.floor(Math.random() * flyingPictures.length)
+    ];
+
+    picture.style.left = (Math.random() * 92 + 2) + "vw";
+    picture.style.fontSize = (22 + Math.random() * 24) + "px";
+
+    const duration = 5 + Math.random() * 4;
+    picture.style.animationDuration = duration + "s";
+
+    document.body.appendChild(picture);
+
+    setTimeout(function() {
+        picture.remove();
+    }, duration * 1000 + 300);
+}
+
+/* Chỉ tạo hiệu ứng sau khi nhập đúng mật khẩu */
+setInterval(createFlyingWord, 900);
+setInterval(createFlyingPicture, 650);
+</script>
+
+</body>
+</html>
